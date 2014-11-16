@@ -67,7 +67,8 @@ sub prepare_song {
     # get next song
     $url = decode_json(get 'http://www.jango.com/streams/' . $station, 'Failed to retrieve stream')->{'url'};
     # get song details
-    $tags = decode_json((get 'http://www.jango.com/players/usd?ver=7', 'Failed to retrieve song details') =~ /_jm\.song_info[\s]*=(.*);/i);
+    ($tags) = ((get 'http://www.jango.com/players/usd?ver=7', 'Failed to retrieve song details') =~ /_jm\.song_info[\s]*=(.*);/i);
+    $tags = decode_json $tags;
 }
 
 # Plays a song, and preloads the next song
