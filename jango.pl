@@ -19,6 +19,7 @@ Input:
     p               Toggles pause on the current song
     n               Starts playing the next song
     q               Quits the player
+    e               Quits the player after the current song finishes
 ";
 my $station;
 
@@ -87,7 +88,11 @@ sub play_song {
 # When the song ends (or is skipped), start the next song
 $SIG{CHLD} = sub {
     close $player;
-    $playing and play_song;
+    if ($playing) {
+        play_song;
+    } else {
+        exit 0;
+    }
 };
 
 # If we don't have a station to play, we must have been given an artist name to search
@@ -107,21 +112,28 @@ play_song;
 # Enable unbuffered user input
 ReadMode 3;
 # Handle user input
-while ($playing) {
+while (1) {
     my $key = ReadKey 0;
     for ($key) {
-        /^q$/ and do {
-            $playing = 0;
-            print $player 'q';
-            waitpid $pid, 0;
-            last;
-        };
+        if ($playing) {
+            /^n$/ and do {
+                print $player 'q';
+                last;
+            };
+            /^e$/ and do {
+                $playing = 0;
+                print "Exiting after song finishes\n";
+                last;
+            };
+        }
         /^p$/ and do {
             print $player 'p';
             last;
         };
-        /^n$/ and do {
+        /^q$/ and do {
+            $playing = 0;
             print $player 'q';
+            waitpid $pid, 0;
             last;
         };
     }
