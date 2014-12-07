@@ -106,7 +106,7 @@ unless (defined $station) {
 };
 
 # Connect to jango in order to get cookies
-get 'http://www.jango.com/stations/' . $station . '/tunein', 'Failed to connect to jango';
+get 'http://www.jango.com/stations/' . $station, 'Failed to connect to jango';
 prepare_song;
 play_song;
 # Enable unbuffered user input
